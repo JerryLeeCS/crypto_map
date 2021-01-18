@@ -11,8 +11,6 @@ function SetString(props) {
       from: drizzleState.accounts[0],
     })
 
-    console.log("stackId ", stackId)
-
     setStackId(stackId)
   }
 
