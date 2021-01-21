@@ -5,9 +5,10 @@ import App from "./App"
 import reportWebVitals from "./reportWebVitals"
 import { Drizzle } from "@drizzle/store"
 import MyStringStore from "./contracts/MyStringStore.json"
+import HexGridStore from "./contracts/HexGridStore.json"
 
 const options = {
-  contracts: [MyStringStore],
+  contracts: [MyStringStore, HexGridStore],
   web3: {
     fallback: {
       type: "ws",

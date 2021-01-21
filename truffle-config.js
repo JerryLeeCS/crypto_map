@@ -1,5 +1,11 @@
-const path = require("path");
+const path = require("path")
 
 module.exports = {
-    contracts_build_directory: path.join(__dirname, "client/src/contracts"),
-};
+  contracts_build_directory: path.join(__dirname, "client/src/contracts"),
+  networks: {
+    develop: {
+      port: 7545,
+      network_id: 5777,
+    },
+  },
+}

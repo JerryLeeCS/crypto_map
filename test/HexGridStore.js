@@ -20,24 +20,22 @@ contract("HexGridStore", (accounts) => {
       }
     )
 
-    const storedDatas = await hexGridStore.getHexGridDataItems.call([
-      hexGridData.id,
-    ])
+    const storedData = await hexGridStore.hexGridDataItems.call(hexGridData.id)
 
     assert.equal(
-      storedDatas[0].color,
+      storedData.color,
       hexGridData.color,
       "hexGridData.color was not stored."
     )
 
     assert.equal(
-      storedDatas[0].emoji,
+      storedData.emoji,
       hexGridData.emoji,
       "hexGridData.emoji was not stored."
     )
 
     assert.equal(
-      storedDatas[0].text,
+      storedData.text,
       hexGridData.text,
       "hexGridData.text was not stored."
     )
@@ -79,9 +77,7 @@ contract("HexGridStore", (accounts) => {
       }
     )
 
-    const [storedData] = await hexGridStore.getHexGridDataItems.call([
-      hexGridDataA.id,
-    ])
+    const storedData = await hexGridStore.hexGridDataItems.call(hexGridDataA.id)
 
     assert.notEqual(
       storedData[0].color,

@@ -1,5 +1,4 @@
 pragma solidity ^0.5.0;
-pragma experimental ABIEncoderV2;
 
 contract HexGridStore {
     struct HexGridData {
@@ -9,7 +8,7 @@ contract HexGridStore {
         uint256 expirationDate;
     }
 
-    mapping (string => HexGridData) hexGridDataItems;
+    mapping (string => HexGridData) public hexGridDataItems;
 
     function addHexGridData(string memory hexGridId, string memory color, string memory emoji, string memory text) public{
         uint epochDay = 86400;
@@ -23,17 +22,5 @@ contract HexGridStore {
 
         HexGridData memory hexGridDataItem = HexGridData(color, text, emoji, now + epochDay);
         hexGridDataItems[hexGridId] = hexGridDataItem;
-    }
-
-    function getHexGridDataItems(string[] memory hexGridIds) public returns(HexGridData[] memory){
-        uint len = hexGridIds.length;
-        HexGridData[] memory dataItems = new HexGridData[](len);
-
-        for (uint i = 0; i < len; i++) {
-            string memory hexGridId = hexGridIds[i];
-            dataItems[i] = hexGridDataItems[hexGridId];
-        }
-
-        return dataItems;
     }
 }

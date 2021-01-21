@@ -138,7 +138,9 @@ function App(props) {
         container: "mapbox",
         style: "mapbox://styles/jerrydeko/ckjxur72k0lu01cld8v81gibh",
         center: [-118.2437, 34.0522],
-        zoom: 10,
+        zoom: 11,
+        maxZoom: 12,
+        minZoom: 11,
       })
 
       setMapboxMap(map)
@@ -172,6 +174,19 @@ function App(props) {
       updateColorHexGridLayout()
     }
   }, [selectedH3Id])
+
+  useEffect(() => {
+    if (!loading && selectedH3Id && drizzleState) {
+      const contract = props.drizzle.contracts.HexGridStore
+      const hexGridDataKey = contract.methods["hexGridDataItems"].cacheCall(
+        selectedH3Id
+      )
+      const hexGridData =
+        drizzleState.contracts.HexGridStore["hexGridDataItems"][hexGridDataKey]
+
+      console.log("hexGridData ", hexGridData)
+    }
+  }, [loading, selectedH3Id, drizzleState])
 
   if (loading) {
     return "Loading Drizzle..."
