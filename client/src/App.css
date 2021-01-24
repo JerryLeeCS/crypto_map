@@ -1,4 +1,21 @@
-#mapbox {
+.App {
+  position: relative;
+}
+
+.action-container {
+  position: absolute;
+  top: 10%;
+  left: 10%;
+  width: 20rem;
+  z-index: 2;
+}
+
+.mapbox-container {
   width: 100vw;
   height: 100vh;
+}
+
+#mapbox {
+  width: 100%;
+  height: 100%;
 }

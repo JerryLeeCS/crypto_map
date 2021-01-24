@@ -4,12 +4,17 @@ import ReadString from "./ReadString.js"
 import SetString from "./SetString.js"
 import mapboxgl from "mapbox-gl/dist/mapbox-gl.js"
 import { polyfill, h3ToGeoBoundary, geoToH3 } from "h3-js"
+import HexGridDataDisplayCard from "./components/HexGridDataDisplayCard"
+import HexGridDataEditCard from "./components/HexGridDataEditCard"
 
 function App(props) {
   const [loading, setLoading] = useState(true)
   const [drizzleState, setDrizzleState] = useState()
   const [mapboxMap, setMapboxMap] = useState()
   const [selectedH3Id, setSelectedH3Id] = useState()
+  const [selectedHexGridData, setSelectedHexGridData] = useState()
+  //Used to get infos from cache.
+  const [displayH3Ids, setDisplayH3Ids] = useState([])
   const h3ResolutionLevel = 7
 
   const updateHexGridLayout = () => {
@@ -26,6 +31,8 @@ function App(props) {
     ]
 
     const h3Ids = polyfill(polygon, h3ResolutionLevel)
+
+    setDisplayH3Ids(h3Ids)
 
     const geoJSONData = {
       type: "FeatureCollection",
@@ -178,13 +185,15 @@ function App(props) {
   useEffect(() => {
     if (!loading && selectedH3Id && drizzleState) {
       const contract = props.drizzle.contracts.HexGridStore
-      const hexGridDataKey = contract.methods["hexGridDataItems"].cacheCall(
-        selectedH3Id
-      )
-      const hexGridData =
-        drizzleState.contracts.HexGridStore["hexGridDataItems"][hexGridDataKey]
+      const hexGridDataItems = contract.methods["hexGridDataItems"]
+      const selectedHexGridDataKey = hexGridDataItems.cacheCall(selectedH3Id)
+      const selectedHexGridData =
+        drizzleState.contracts.HexGridStore["hexGridDataItems"][
+          selectedHexGridDataKey
+        ]
 
-      console.log("hexGridData ", hexGridData)
+      setSelectedHexGridData(selectedHexGridData)
+      console.log(selectedHexGridData)
     }
   }, [loading, selectedH3Id, drizzleState])
 
@@ -194,7 +203,26 @@ function App(props) {
 
   return (
     <div className="App">
-      <div id="mapbox"></div>
+      <div className="action-container">
+        <div className="action-container_search-container">
+          <div className="input-group mb-3">
+            <input
+              type="text"
+              className="form-control"
+              placeholder="Location"
+              aria-label="Location"
+              aria-describedby="button-addon2"
+            />
+            <button className="btn btn-dark" type="button" id="button-addon2">
+              Search
+            </button>
+          </div>
+        </div>
+        <HexGridDataEditCard />
+      </div>
+      <div className="mapbox-container">
+        <div id="mapbox"></div>
+      </div>
     </div>
   )
 }
