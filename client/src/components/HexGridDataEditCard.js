@@ -24,19 +24,45 @@ function HexGridDataEditCard(props) {
             class="form-control"
             id="hexGridDataTextArea"
             rows="3"
+            onChange={(event) => {
+              setHexGridData((prev) => ({
+                ...prev,
+                text: event.target.value,
+              }))
+            }}
           ></textarea>
         </div>
-        <CirclePicker
-          width="100%"
-          onChange={({ hex: color }) => {
-            console.log("on color change ", color)
-            setHexGridData((prev) => ({
-              ...prev,
-              color,
-            }))
-          }}
-        />
-        <div className="card_action-container text-end">
+        <p>
+          <a
+            class="btn btn-dark"
+            style={{
+              width: "100%",
+            }}
+            data-bs-toggle="collapse"
+            href="#colorPickerDropdown"
+            role="button"
+            aria-expanded="false"
+            aria-controls="colorPickerDropdown"
+          >
+            Pick a color
+          </a>
+        </p>
+        <div class="row">
+          <div class="collapse multi-collapse" id="colorPickerDropdown">
+            <div class="card card-body">
+              <CirclePicker
+                width="100%"
+                onChange={({ hex: color }) => {
+                  setHexGridData((prev) => ({
+                    ...prev,
+                    color,
+                  }))
+                }}
+              />
+            </div>
+          </div>
+        </div>
+        <div className="card_action-container text-end mt-4">
           <button
             type="button"
             class="btn btn-light me-2"
