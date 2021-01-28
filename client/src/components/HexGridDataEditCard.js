@@ -1,11 +1,27 @@
 import React, { useState } from "react"
 import PropTypes from "prop-types"
 import { CirclePicker } from "react-color"
+import EmojiPicker from "emoji-picker-react"
 
 function HexGridDataEditCard(props) {
   const [hexGridData, setHexGridData] = useState({
     color: "#000000",
+    emoji: "🌎",
   })
+
+  function onColorChange({ hex: color }) {
+    setHexGridData((prev) => ({
+      ...prev,
+      color,
+    }))
+  }
+
+  function onEmojiClick(event, { emoji }) {
+    setHexGridData((prev) => ({
+      ...prev,
+      emoji,
+    }))
+  }
 
   return (
     <div className="card">
@@ -13,7 +29,7 @@ function HexGridDataEditCard(props) {
         className="card-header text-center p-0"
         style={{ backgroundColor: hexGridData.color, fontSize: "2rem" }}
       >
-        😆
+        {hexGridData.emoji}
       </div>
       <div className="card-body" style={{ borderColor: hexGridData.color }}>
         <div class="mb-3">
@@ -48,20 +64,39 @@ function HexGridDataEditCard(props) {
           </a>
         </p>
         <div class="row">
-          <div class="collapse multi-collapse" id="colorPickerDropdown">
+          <div class="collapse multi-collapse mb-2" id="colorPickerDropdown">
             <div class="card card-body">
-              <CirclePicker
-                width="100%"
-                onChange={({ hex: color }) => {
-                  setHexGridData((prev) => ({
-                    ...prev,
-                    color,
-                  }))
-                }}
+              <CirclePicker width="100%" onChange={onColorChange} />
+            </div>
+          </div>
+        </div>
+
+        <p>
+          <a
+            class="btn btn-dark"
+            style={{
+              width: "100%",
+            }}
+            data-bs-toggle="collapse"
+            href="#emojiPickerDropdown"
+            role="button"
+            aria-expanded="false"
+            aria-controls="emojiPickerDropdown"
+          >
+            Pick an emoji
+          </a>
+        </p>
+        <div class="row">
+          <div class="collapse multi-collapse" id="emojiPickerDropdown">
+            <div class="card card-body">
+              <EmojiPicker
+                pickerStyle={{ width: "100%" }}
+                onEmojiClick={onEmojiClick}
               />
             </div>
           </div>
         </div>
+
         <div className="card_action-container text-end mt-4">
           <button
             type="button"
