@@ -9,6 +9,13 @@ function HexGridDataEditCard(props) {
     emoji: "🌎",
   })
 
+  function onMessageChange(event) {
+    setHexGridData((prev) => ({
+      ...prev,
+      text: event.target.value,
+    }))
+  }
+
   function onColorChange({ hex: color }) {
     setHexGridData((prev) => ({
       ...prev,
@@ -32,25 +39,20 @@ function HexGridDataEditCard(props) {
         {hexGridData.emoji}
       </div>
       <div className="card-body" style={{ borderColor: hexGridData.color }}>
-        <div class="mb-3">
-          <label htmlFor="hexGridDataTextArea" class="form-label">
+        <div className="mb-3">
+          <label htmlFor="hexGridDataTextArea" className="form-label">
             message
           </label>
           <textarea
-            class="form-control"
+            className="form-control"
             id="hexGridDataTextArea"
             rows="3"
-            onChange={(event) => {
-              setHexGridData((prev) => ({
-                ...prev,
-                text: event.target.value,
-              }))
-            }}
+            onChange={onMessageChange}
           ></textarea>
         </div>
         <p>
           <a
-            class="btn btn-dark"
+            className="btn btn-dark"
             style={{
               width: "100%",
             }}
@@ -63,9 +65,12 @@ function HexGridDataEditCard(props) {
             Pick a color
           </a>
         </p>
-        <div class="row">
-          <div class="collapse multi-collapse mb-2" id="colorPickerDropdown">
-            <div class="card card-body">
+        <div className="row">
+          <div
+            className="collapse multi-collapse mb-2"
+            id="colorPickerDropdown"
+          >
+            <div className="card card-body">
               <CirclePicker width="100%" onChange={onColorChange} />
             </div>
           </div>
@@ -73,7 +78,7 @@ function HexGridDataEditCard(props) {
 
         <p>
           <a
-            class="btn btn-dark"
+            className="btn btn-dark"
             style={{
               width: "100%",
             }}
@@ -86,9 +91,9 @@ function HexGridDataEditCard(props) {
             Pick an emoji
           </a>
         </p>
-        <div class="row">
-          <div class="collapse multi-collapse" id="emojiPickerDropdown">
-            <div class="card card-body">
+        <div className="row">
+          <div className="collapse multi-collapse" id="emojiPickerDropdown">
+            <div className="card card-body">
               <EmojiPicker
                 pickerStyle={{ width: "100%" }}
                 onEmojiClick={onEmojiClick}
@@ -100,13 +105,17 @@ function HexGridDataEditCard(props) {
         <div className="card_action-container text-end mt-4">
           <button
             type="button"
-            class="btn btn-light me-2"
-            onClick={props.onCreate}
+            className="btn btn-light me-2"
+            onClick={() => props.onCreate(hexGridData)}
             disabled={props.isCreateDisabled}
           >
             Create
           </button>
-          <button type="button" class="btn btn-light" onClick={props.onCancel}>
+          <button
+            type="button"
+            className="btn btn-light"
+            onClick={props.onCancel}
+          >
             Cancel
           </button>
         </div>

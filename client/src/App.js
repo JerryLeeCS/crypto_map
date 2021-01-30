@@ -9,6 +9,8 @@ import HexGridDataEditCard from "./components/HexGridDataEditCard"
 
 function App(props) {
   const [loading, setLoading] = useState(true)
+  const [isViewing, setIsViewing] = useState(false)
+  const [isEditing, setIsEditing] = useState(false)
   const [drizzleState, setDrizzleState] = useState()
   const [mapboxMap, setMapboxMap] = useState()
   const [selectedH3Id, setSelectedH3Id] = useState()
@@ -76,48 +78,51 @@ function App(props) {
   }
 
   const updateColorHexGridLayout = () => {
-    const geoJSONData = {
-      type: "FeatureCollection",
-      features: [
-        {
-          type: "Feature",
-          geometry: {
-            type: "Polygon",
-            coordinates: [h3ToGeoBoundary(selectedH3Id, true)],
+    if (mapboxMap) {
+      const coordinates = selectedH3Id
+        ? [h3ToGeoBoundary(selectedH3Id, true)]
+        : []
+      const geoJSONData = {
+        type: "FeatureCollection",
+        features: [
+          {
+            type: "Feature",
+            geometry: {
+              type: "Polygon",
+              coordinates,
+            },
+            properties: {
+              density: 1,
+              color: "#000000",
+              borderColor: "#FFFFFF",
+            },
           },
-          properties: {
-            density: 1,
-            color: "#000000",
-            borderColor: "#FFFFFF",
-          },
+        ],
+      }
+      const sourceId = "colorSourceId"
+      const layerId = "colorLayerId"
+      if (mapboxMap.getLayer(layerId)) {
+        mapboxMap.removeLayer(layerId)
+        mapboxMap.removeSource(sourceId)
+      }
+
+      mapboxMap.addSource(sourceId, {
+        type: "geojson",
+        data: geoJSONData,
+      })
+
+      mapboxMap.addLayer({
+        id: layerId,
+        type: "fill",
+        source: sourceId,
+        layout: {},
+        paint: {
+          "fill-color": ["get", "color"],
+          "fill-outline-color": ["get", "borderColor"],
+          "fill-opacity": ["get", "density"],
         },
-      ],
+      })
     }
-
-    const sourceId = "colorSourceId"
-    const layerId = "colorLayerId"
-
-    if (mapboxMap.getLayer(layerId)) {
-      mapboxMap.removeLayer(layerId)
-      mapboxMap.removeSource(sourceId)
-    }
-
-    mapboxMap.addSource(sourceId, {
-      type: "geojson",
-      data: geoJSONData,
-    })
-
-    mapboxMap.addLayer({
-      id: layerId,
-      type: "fill",
-      source: sourceId,
-      layout: {},
-      paint: {
-        "fill-color": ["get", "color"],
-        "fill-outline-color": ["get", "borderColor"],
-        "fill-opacity": ["get", "density"],
-      },
-    })
   }
 
   useEffect(() => {
@@ -160,6 +165,8 @@ function App(props) {
         const { lat, lng } = e.lngLat.wrap()
         const h3SelectedIndex = geoToH3(lat, lng, h3ResolutionLevel)
         setSelectedH3Id(h3SelectedIndex)
+        setIsEditing(false)
+        setIsViewing(true)
       }
 
       mapboxMap.on("load", updateHexGridLayout)
@@ -177,9 +184,7 @@ function App(props) {
   }, [mapboxMap])
 
   useEffect(() => {
-    if (selectedH3Id) {
-      updateColorHexGridLayout()
-    }
+    updateColorHexGridLayout()
   }, [selectedH3Id])
 
   useEffect(() => {
@@ -218,7 +223,28 @@ function App(props) {
             </button>
           </div>
         </div>
-        <HexGridDataEditCard />
+        {selectedHexGridData && isViewing && (
+          <HexGridDataDisplayCard
+            onEdit={() => {
+              setIsViewing(false)
+              setIsEditing(true)
+            }}
+            onClose={() => {
+              setSelectedH3Id(undefined)
+              setSelectedHexGridData(undefined)
+              setIsViewing(false)
+            }}
+          />
+        )}
+        {isEditing && (
+          <HexGridDataEditCard
+            onCreate={(hexGridData) => {}}
+            onCancel={() => {
+              setIsEditing(false)
+              setIsViewing(true)
+            }}
+          />
+        )}
       </div>
       <div className="mapbox-container">
         <div id="mapbox"></div>
