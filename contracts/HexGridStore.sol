@@ -11,16 +11,11 @@ contract HexGridStore {
     mapping (string => HexGridData) public hexGridDataItems;
 
     function addHexGridData(string memory hexGridId, string memory color, string memory emoji, string memory text) public{
-        uint epochDay = 86400;
         if (hexGridDataItems[hexGridId].expirationDate != 0) {
-            
             HexGridData memory prevHexGridDataItem = hexGridDataItems[hexGridId];
-            if ((now - prevHexGridDataItem.expirationDate) <= epochDay) {
-                revert();
-            }
+            require(now > prevHexGridDataItem.expirationDate);
         }
-
-        HexGridData memory hexGridDataItem = HexGridData(color, text, emoji, now + epochDay);
+        HexGridData memory hexGridDataItem = HexGridData(color, text, emoji, now + 1 days);
         hexGridDataItems[hexGridId] = hexGridDataItem;
     }
 }

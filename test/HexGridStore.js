@@ -42,57 +42,47 @@ contract("HexGridStore", (accounts) => {
   })
 
   it("should not store hexGridData in HexGridStore if it's within expirationDate.", async () => {
-    const hexGridStore = await HexGridStore.deployed()
-    const hexGridDataA = {
-      id: "1",
-      color: "#ffffff",
-      emoji: "😟",
-      text: "Just testing",
-    }
-
-    const hexGridDataB = {
-      id: "1",
-      color: "#000000",
-      emoji: "😏",
-      text: "Just testing out",
-    }
-
-    await hexGridStore.addHexGridData(
-      hexGridDataA.id,
-      hexGridDataA.color,
-      hexGridDataA.emoji,
-      hexGridDataA.text,
-      {
-        from: accounts[0],
+    try {
+      const hexGridStore = await HexGridStore.deployed()
+      const hexGridDataA = {
+        id: "1",
+        color: "#ffffff",
+        emoji: "😟",
+        text: "Just testing",
       }
-    )
 
-    await hexGridStore.addHexGridData(
-      hexGridDataB.id,
-      hexGridDataB.color,
-      hexGridDataB.emoji,
-      hexGridDataB.text,
-      {
-        from: accounts[0],
+      const hexGridDataB = {
+        id: "1",
+        color: "#000000",
+        emoji: "😏",
+        text: "Just testing out",
       }
-    )
 
-    const storedData = await hexGridStore.hexGridDataItems.call(hexGridDataA.id)
+      await hexGridStore.addHexGridData(
+        hexGridDataA.id,
+        hexGridDataA.color,
+        hexGridDataA.emoji,
+        hexGridDataA.text,
+        {
+          from: accounts[0],
+        }
+      )
 
-    assert.notEqual(
-      storedData[0].color,
-      hexGridDataB.color,
-      "hexGridDataB were able to update color dispite expirationDate."
-    )
-    assert.notEqual(
-      storedData[0].emoji,
-      hexGridDataB.emoji,
-      "hexGridDataB were able to update emoji dispite expirationDate."
-    )
-    assert.notEqual(
-      storedData[0].text,
-      hexGridDataB.text,
-      "hexGridDataB were able to update text dispite expirationDate."
-    )
+      await hexGridStore.addHexGridData(
+        hexGridDataB.id,
+        hexGridDataB.color,
+        hexGridDataB.emoji,
+        hexGridDataB.text,
+        {
+          from: accounts[0],
+        }
+      )
+    } catch (error) {
+      assert(error, "Expected an error but did not get one")
+      assert(
+        error.message.includes("revert"),
+        "Expected revert error but got '" + error.message + "' instead"
+      )
+    }
   })
 })
