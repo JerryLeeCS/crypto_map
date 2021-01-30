@@ -1,7 +1,5 @@
 import { useState, useEffect } from "react"
 import "./App.css"
-import ReadString from "./ReadString.js"
-import SetString from "./SetString.js"
 import mapboxgl from "mapbox-gl/dist/mapbox-gl.js"
 import { polyfill, h3ToGeoBoundary, geoToH3 } from "h3-js"
 import HexGridDataDisplayCard from "./components/HexGridDataDisplayCard"
@@ -125,6 +123,32 @@ function App(props) {
     }
   }
 
+  function setHexGridData(hexGridData) {
+    const contract = props.drizzle.contracts.HexGridStore
+    const { color, emoji, text } = hexGridData
+
+    const transactionId = contract.methods["addHexGridData"].cacheSend(
+      selectedH3Id,
+      color,
+      emoji,
+      text,
+      {
+        from: drizzleState.accounts[0],
+      }
+    )
+
+    const { transactions, transactionStack } = drizzleState
+    const txHash = transactionStack[transactionId]
+
+    if (txHash) {
+      console.log(
+        `Transaction status: ${
+          transactions[txHash] && transactions[txHash].status
+        }`
+      )
+    }
+  }
+
   useEffect(() => {
     const { drizzle } = props
 
@@ -197,8 +221,9 @@ function App(props) {
           selectedHexGridDataKey
         ]
 
-      setSelectedHexGridData(selectedHexGridData)
-      console.log(selectedHexGridData)
+      if (selectedHexGridData && selectedHexGridData.value) {
+        setSelectedHexGridData(selectedHexGridData.value)
+      }
     }
   }, [loading, selectedH3Id, drizzleState])
 
@@ -225,6 +250,7 @@ function App(props) {
         </div>
         {selectedHexGridData && isViewing && (
           <HexGridDataDisplayCard
+            hexGridData={selectedHexGridData}
             onEdit={() => {
               setIsViewing(false)
               setIsEditing(true)
@@ -238,7 +264,10 @@ function App(props) {
         )}
         {isEditing && (
           <HexGridDataEditCard
-            onCreate={(hexGridData) => {}}
+            onCreate={(hexGridData) => {
+              setHexGridData(hexGridData)
+              setIsEditing(false)
+            }}
             onCancel={() => {
               setIsEditing(false)
               setIsViewing(true)
