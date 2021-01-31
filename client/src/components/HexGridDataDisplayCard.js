@@ -2,6 +2,11 @@ import React from "react"
 import PropTypes from "prop-types"
 
 function HexGridDataDisplayCard(props) {
+  const hexGridDataIsEmpty =
+    props.hexGridData &&
+    props.hexGridData.color === "" &&
+    props.hexGridData.text === "" &&
+    props.hexGridData.emoji === ""
   return (
     <div className="card">
       <div
@@ -25,9 +30,11 @@ function HexGridDataDisplayCard(props) {
               : "",
         }}
       >
-        <p className="card-text">
-          {props.hexGridData && props.hexGridData.text}
-        </p>
+        {!hexGridDataIsEmpty && (
+          <p className="card-text">
+            {props.hexGridData && props.hexGridData.text}
+          </p>
+        )}
         <div className="card_action-container text-end">
           <button
             type="button"
@@ -35,7 +42,7 @@ function HexGridDataDisplayCard(props) {
             onClick={props.onEdit}
             disabled={props.isEditDisabled}
           >
-            Edit
+            {hexGridDataIsEmpty ? "Create" : "Edit"}
           </button>
           <button
             type="button"
