@@ -85,4 +85,59 @@ contract("HexGridStore", (accounts) => {
       )
     }
   })
+
+  it("should getHexGridDataItems.", async () => {
+    try {
+      const hexGridStore = await HexGridStore.deployed()
+      const hexGridDataA = {
+        id: "1",
+        color: "#ffffff",
+        emoji: "😟",
+        text: "Just testing",
+      }
+
+      const hexGridDataB = {
+        id: "1",
+        color: "#000000",
+        emoji: "😏",
+        text: "Just testing out",
+      }
+
+      await hexGridStore.addHexGridData(
+        hexGridDataA.id,
+        hexGridDataA.color,
+        hexGridDataA.emoji,
+        hexGridDataA.text,
+        {
+          from: accounts[0],
+        }
+      )
+
+      await hexGridStore.addHexGridData(
+        hexGridDataB.id,
+        hexGridDataB.color,
+        hexGridDataB.emoji,
+        hexGridDataB.text,
+        {
+          from: accounts[0],
+        }
+      )
+
+      const hexGridDataItems = await getHexGridDataItems([
+        hexGridDataA.id,
+        hexGridDataB.id,
+      ])
+
+      assert.equal(
+        hexGridDataItems[0].id,
+        hexGridDataA.id,
+        "Stored value A and got item A should be the same."
+      )
+      assert.equal(
+        hexGridDataItems[1].id,
+        hexGridDataB.id,
+        "Stored value B and got item B should be the same."
+      )
+    } catch (error) {}
+  })
 })

@@ -1,7 +1,7 @@
-import { useState, useEffect } from "react"
+import { useState, useEffect, useMemo } from "react"
 import "./App.css"
 import mapboxgl from "mapbox-gl/dist/mapbox-gl.js"
-import { polyfill, h3ToGeoBoundary, geoToH3 } from "h3-js"
+import { polyfill, h3ToGeoBoundary, geoToH3, h3ToGeo } from "h3-js"
 import HexGridDataDisplayCard from "./components/HexGridDataDisplayCard"
 import HexGridDataEditCard from "./components/HexGridDataEditCard"
 
@@ -13,6 +13,7 @@ function App(props) {
   const [mapboxMap, setMapboxMap] = useState()
   const [selectedH3Id, setSelectedH3Id] = useState()
   const [selectedHexGridData, setSelectedHexGridData] = useState()
+  const [hexGridDataMap, setHexGridDataMap] = useState({})
   //Used to get infos from cache.
   const [displayH3Ids, setDisplayH3Ids] = useState([])
   const h3ResolutionLevel = 7
@@ -43,7 +44,7 @@ function App(props) {
           coordinates: [h3ToGeoBoundary(h3Id, true)],
         },
         properties: {
-          density: 0.3,
+          density: 0.4,
           color: "#d3d3d3",
         },
       })),
@@ -75,7 +76,117 @@ function App(props) {
     })
   }
 
-  const updateColorHexGridLayout = () => {
+  const updateHexGridDataLayout = async (hexGridDataMap, h3Ids) => {
+    if (hexGridDataMap && h3Ids) {
+      await mapboxMap.loadImage(
+        "https://cdn.jsdelivr.net/gh/iamcal/emoji-data@master/img-apple-64/1f441-fe0f.png",
+        function (error, image) {
+          if (error) throw error
+          mapboxMap.addImage("emoji", image)
+        }
+      )
+      const hexGridColorData = {
+        type: "FeatureCollection",
+        features: h3Ids
+          .filter(
+            (h3Id) =>
+              hexGridDataMap &&
+              hexGridDataMap[h3Id] &&
+              hexGridDataMap[h3Id].emoji &&
+              hexGridDataMap[h3Id].color
+          )
+          .map((h3Id) => ({
+            type: "Feature",
+            geometry: {
+              type: "Polygon",
+              coordinates: [h3ToGeoBoundary(h3Id, true)],
+            },
+            properties: {
+              density: 0.5,
+              color: hexGridDataMap[h3Id].color,
+            },
+          })),
+      }
+
+      const hexGridEmojiData = {
+        type: "FeatureCollection",
+        features: h3Ids
+          .filter(
+            (h3Id) =>
+              hexGridDataMap &&
+              hexGridDataMap[h3Id] &&
+              hexGridDataMap[h3Id].emoji &&
+              hexGridDataMap[h3Id].color
+          )
+          .map((h3Id) => {
+            const [lat, lng] = h3ToGeo(h3Id)
+            console.log({ lat, lng, emoji: hexGridDataMap[h3Id].emoji })
+
+            return {
+              type: "Feature",
+              properties: {
+                emoji: hexGridDataMap[h3Id].emoji,
+                description: "Rockabilly Rockstars",
+              },
+              geometry: {
+                type: "Point",
+                coordinates: [lng, lat],
+              },
+            }
+          }),
+      }
+
+      const dataSourceColorId = "dataSourceColorId"
+      const dataLayerColorId = "dataLayerColorId"
+
+      const dataSourceEmojiId = "dataSourceEmojiId"
+      const dataLayerEmojiId = "dataLayerEmojiId"
+
+      if (mapboxMap.getLayer(dataLayerColorId)) {
+        mapboxMap.removeLayer(dataLayerColorId)
+        mapboxMap.removeSource(dataSourceColorId)
+      }
+
+      if (mapboxMap.getLayer(dataLayerEmojiId)) {
+        mapboxMap.removeLayer(dataLayerEmojiId)
+        mapboxMap.removeSource(dataSourceEmojiId)
+      }
+
+      mapboxMap.addSource(dataSourceColorId, {
+        type: "geojson",
+        data: hexGridColorData,
+      })
+
+      mapboxMap.addSource(dataSourceEmojiId, {
+        type: "geojson",
+        data: hexGridEmojiData,
+      })
+
+      mapboxMap.addLayer({
+        id: dataLayerColorId,
+        type: "fill",
+        source: dataSourceColorId,
+        layout: {},
+        paint: {
+          "fill-color": ["get", "color"],
+          // "fill-outline-color": "#000000",
+          "fill-opacity": ["get", "density"],
+        },
+      })
+
+      mapboxMap.addLayer({
+        id: dataLayerEmojiId,
+        type: "symbol",
+        source: dataSourceEmojiId,
+        layout: {
+          "icon-image": "emoji",
+          "icon-size": 0.6,
+        },
+      })
+    }
+  }
+
+  const updateSelectedHexGridLayout = () => {
     if (mapboxMap) {
       const coordinates = selectedH3Id
         ? [h3ToGeoBoundary(selectedH3Id, true)]
@@ -149,6 +260,30 @@ function App(props) {
     }
   }
 
+  function getHexGridDataMap(hexGridIds) {
+    const contract = props.drizzle.contracts.HexGridStore
+    const dataId = contract.methods["getHexGridDataItems"].cacheCall(
+      hexGridIds,
+      {
+        from: drizzleState.accounts[0],
+      }
+    )
+
+    if (dataId) {
+      const { HexGridStore } = drizzleState.contracts
+      const hexGridDataItems = HexGridStore["getHexGridDataItems"][dataId]
+      if (hexGridDataItems && hexGridDataItems.value) {
+        const newHexGridDataMap = {}
+        hexGridIds.forEach((hexGridId, index) => {
+          newHexGridDataMap[hexGridId] = hexGridDataItems.value[index]
+        })
+        return newHexGridDataMap
+      }
+    }
+
+    return {}
+  }
+
   useEffect(() => {
     const { drizzle } = props
 
@@ -208,21 +343,38 @@ function App(props) {
   }, [mapboxMap])
 
   useEffect(() => {
-    updateColorHexGridLayout()
+    updateSelectedHexGridLayout()
   }, [selectedH3Id])
 
   useEffect(() => {
-    if (!loading && selectedH3Id && drizzleState) {
-      const contract = props.drizzle.contracts.HexGridStore
-      const hexGridDataItems = contract.methods["hexGridDataItems"]
-      const selectedHexGridDataKey = hexGridDataItems.cacheCall(selectedH3Id)
-      const selectedHexGridData =
-        drizzleState.contracts.HexGridStore["hexGridDataItems"][
-          selectedHexGridDataKey
-        ]
+    if (
+      displayH3Ids &&
+      displayH3Ids.length > 0 &&
+      drizzleState &&
+      drizzleState.drizzleStatus.initialized
+    ) {
+      const hexGridDataMap = getHexGridDataMap(displayH3Ids)
+      updateHexGridDataLayout(hexGridDataMap, displayH3Ids)
+      setHexGridDataMap(hexGridDataMap)
+    }
+  }, [displayH3Ids, drizzleState])
 
-      if (selectedHexGridData && selectedHexGridData.value) {
-        setSelectedHexGridData(selectedHexGridData.value)
+  useEffect(() => {
+    if (!loading && selectedH3Id && drizzleState) {
+      if (hexGridDataMap && hexGridDataMap[selectedH3Id]) {
+        setSelectedHexGridData(hexGridDataMap[selectedH3Id])
+      } else {
+        const contract = props.drizzle.contracts.HexGridStore
+        const hexGridDataItems = contract.methods["hexGridDataItems"]
+        const selectedHexGridDataKey = hexGridDataItems.cacheCall(selectedH3Id)
+        const selectedHexGridData =
+          drizzleState.contracts.HexGridStore["hexGridDataItems"][
+            selectedHexGridDataKey
+          ]
+
+        if (selectedHexGridData && selectedHexGridData.value) {
+          setSelectedHexGridData(selectedHexGridData.value)
+        }
       }
     }
   }, [loading, selectedH3Id, drizzleState])

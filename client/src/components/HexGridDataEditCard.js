@@ -24,9 +24,11 @@ function HexGridDataEditCard(props) {
   }
 
   function onEmojiClick(event, { emoji }) {
+    const emojiSource = event.target.currentSrc
     setHexGridData((prev) => ({
       ...prev,
       emoji,
+      emojiSource,
     }))
   }
 
