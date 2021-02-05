@@ -6,7 +6,8 @@ import EmojiPicker from "emoji-picker-react"
 function HexGridDataEditCard(props) {
   const [hexGridData, setHexGridData] = useState({
     color: "#000000",
-    emoji: "🌎",
+    emoji:
+      "https://cdn.jsdelivr.net/gh/iamcal/emoji-data@master/img-apple-64/1f60a.png",
   })
 
   function onMessageChange(event) {
@@ -23,22 +24,24 @@ function HexGridDataEditCard(props) {
     }))
   }
 
-  function onEmojiClick(event, { emoji }) {
-    const emojiSource = event.target.currentSrc
+  function onEmojiClick(event) {
+    const emoji =
+      event.target.type === "button"
+        ? event.target.firstChild.currentSrc
+        : event.target.currentSrc
     setHexGridData((prev) => ({
       ...prev,
       emoji,
-      emojiSource,
     }))
   }
 
   return (
     <div className="card">
       <div
-        className="card-header text-center p-0"
+        className="card-header text-center"
         style={{ backgroundColor: hexGridData.color, fontSize: "2rem" }}
       >
-        {hexGridData.emoji}
+        <img src={hexGridData.emoji}></img>
       </div>
       <div className="card-body" style={{ borderColor: hexGridData.color }}>
         <div className="mb-3">

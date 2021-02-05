@@ -10,7 +10,7 @@ function HexGridDataDisplayCard(props) {
   return (
     <div className="card">
       <div
-        className="card-header text-center p-0"
+        className="card-header text-center"
         style={{
           backgroundColor:
             props.hexGridData && props.hexGridData.color
@@ -19,7 +19,9 @@ function HexGridDataDisplayCard(props) {
           fontSize: "2rem",
         }}
       >
-        {props.hexGridData && props.hexGridData.emoji}
+        {props.hexGridData && props.hexGridData.emoji && (
+          <img src={props.hexGridData.emoji}></img>
+        )}
       </div>
       <div
         className="card-body"

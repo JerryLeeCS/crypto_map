@@ -78,13 +78,36 @@ function App(props) {
 
   const updateHexGridDataLayout = async (hexGridDataMap, h3Ids) => {
     if (hexGridDataMap && h3Ids) {
-      await mapboxMap.loadImage(
-        "https://cdn.jsdelivr.net/gh/iamcal/emoji-data@master/img-apple-64/1f441-fe0f.png",
-        function (error, image) {
-          if (error) throw error
-          mapboxMap.addImage("emoji", image)
-        }
-      )
+      const imageNameMap = mapboxMap
+        .listImages()
+        .reduce((imageNameMap, imageName) => {
+          imageNameMap[imageName] = true
+
+          return imageNameMap
+        }, {})
+
+      h3Ids
+        .filter(
+          (h3Id) =>
+            hexGridDataMap &&
+            hexGridDataMap[h3Id] &&
+            hexGridDataMap[h3Id].emoji &&
+            hexGridDataMap[h3Id].color
+        )
+        .map((h3Id) => {
+          const emojiUrlPath = hexGridDataMap[h3Id].emoji.split("/")
+          const emojiName = emojiUrlPath[emojiUrlPath.length - 1]
+
+          if (!imageNameMap[emojiName]) {
+            mapboxMap.loadImage(
+              hexGridDataMap[h3Id].emoji,
+              function (error, image) {
+                if (error) throw error
+                mapboxMap.addImage(emojiName, image)
+              }
+            )
+          }
+        })
       const hexGridColorData = {
         type: "FeatureCollection",
         features: h3Ids
@@ -120,12 +143,13 @@ function App(props) {
           )
           .map((h3Id) => {
             const [lat, lng] = h3ToGeo(h3Id)
-            console.log({ lat, lng, emoji: hexGridDataMap[h3Id].emoji })
+            const emojiUrlPath = hexGridDataMap[h3Id].emoji.split("/")
+            const emojiName = emojiUrlPath[emojiUrlPath.length - 1]
 
             return {
               type: "Feature",
               properties: {
-                emoji: hexGridDataMap[h3Id].emoji,
+                emoji: emojiName,
                 description: "Rockabilly Rockstars",
               },
               geometry: {
@@ -179,7 +203,7 @@ function App(props) {
         type: "symbol",
         source: dataSourceEmojiId,
         layout: {
-          "icon-image": "emoji",
+          "icon-image": ["get", "emoji"],
           "icon-size": 0.6,
         },
       })
