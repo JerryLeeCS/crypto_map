@@ -13,6 +13,7 @@ function App(props) {
   const [mapboxMap, setMapboxMap] = useState()
   const [selectedH3Id, setSelectedH3Id] = useState()
   const [selectedHexGridData, setSelectedHexGridData] = useState()
+  const [hexGridDataId, setHexGridDataId] = useState(null)
   const [hexGridDataMap, setHexGridDataMap] = useState({})
   //Used to get infos from cache.
   const [displayH3Ids, setDisplayH3Ids] = useState([])
@@ -125,7 +126,7 @@ function App(props) {
               coordinates: [h3ToGeoBoundary(h3Id, true)],
             },
             properties: {
-              density: 0.5,
+              density: 0.3,
               color: hexGridDataMap[h3Id].color,
             },
           })),
@@ -204,7 +205,7 @@ function App(props) {
         source: dataSourceEmojiId,
         layout: {
           "icon-image": ["get", "emoji"],
-          "icon-size": 0.6,
+          "icon-size": 0.4,
         },
       })
     }
@@ -284,7 +285,7 @@ function App(props) {
     }
   }
 
-  function getHexGridDataMap(hexGridIds) {
+  function getHexGridDataCacheCallId(hexGridIds) {
     const contract = props.drizzle.contracts.HexGridStore
     const dataId = contract.methods["getHexGridDataItems"].cacheCall(
       hexGridIds,
@@ -293,19 +294,7 @@ function App(props) {
       }
     )
 
-    if (dataId) {
-      const { HexGridStore } = drizzleState.contracts
-      const hexGridDataItems = HexGridStore["getHexGridDataItems"][dataId]
-      if (hexGridDataItems && hexGridDataItems.value) {
-        const newHexGridDataMap = {}
-        hexGridIds.forEach((hexGridId, index) => {
-          newHexGridDataMap[hexGridId] = hexGridDataItems.value[index]
-        })
-        return newHexGridDataMap
-      }
-    }
-
-    return {}
+    return dataId
   }
 
   useEffect(() => {
@@ -377,11 +366,27 @@ function App(props) {
       drizzleState &&
       drizzleState.drizzleStatus.initialized
     ) {
-      const hexGridDataMap = getHexGridDataMap(displayH3Ids)
-      updateHexGridDataLayout(hexGridDataMap, displayH3Ids)
-      setHexGridDataMap(hexGridDataMap)
+      const hexGridDataCacheCallId = getHexGridDataCacheCallId(displayH3Ids)
+      setHexGridDataId(hexGridDataCacheCallId)
     }
-  }, [displayH3Ids, drizzleState])
+  }, [displayH3Ids])
+
+  useEffect(() => {
+    if (hexGridDataId) {
+      const { HexGridStore } = drizzleState.contracts
+      const hexGridDataItems =
+        HexGridStore["getHexGridDataItems"][hexGridDataId]
+      console.log("hexGridDataItems ", hexGridDataItems)
+      if (hexGridDataItems && hexGridDataItems.value) {
+        const newHexGridDataMap = {}
+        displayH3Ids.forEach((hexGridId, index) => {
+          newHexGridDataMap[hexGridId] = hexGridDataItems.value[index]
+        })
+        updateHexGridDataLayout(newHexGridDataMap, displayH3Ids)
+        setHexGridDataMap(newHexGridDataMap)
+      }
+    }
+  }, [hexGridDataId, drizzleState])
 
   useEffect(() => {
     if (!loading && selectedH3Id && drizzleState) {
