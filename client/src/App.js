@@ -376,7 +376,6 @@ function App(props) {
       const { HexGridStore } = drizzleState.contracts
       const hexGridDataItems =
         HexGridStore["getHexGridDataItems"][hexGridDataId]
-      console.log("hexGridDataItems ", hexGridDataItems)
       if (hexGridDataItems && hexGridDataItems.value) {
         const newHexGridDataMap = {}
         displayH3Ids.forEach((hexGridId, index) => {
