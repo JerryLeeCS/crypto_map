@@ -4,9 +4,11 @@ import mapboxgl from "mapbox-gl/dist/mapbox-gl.js"
 import { polyfill, h3ToGeoBoundary, geoToH3, h3ToGeo } from "h3-js"
 import HexGridDataDisplayCard from "./components/HexGridDataDisplayCard"
 import HexGridDataEditCard from "./components/HexGridDataEditCard"
+import LinearLoader from "./components/LinearLoader/LinearLoader"
 
 function App(props) {
-  const [loading, setLoading] = useState(true)
+  const [drizzleIsLoading, setDrizzleIsLoading] = useState(true)
+  const [hexGridDataIsLoading, setHexGridDataIsLoading] = useState(false)
   const [isViewing, setIsViewing] = useState(false)
   const [isEditing, setIsEditing] = useState(false)
   const [drizzleState, setDrizzleState] = useState()
@@ -305,7 +307,7 @@ function App(props) {
 
       if (drizzleState.drizzleStatus.initialized) {
         setDrizzleState(drizzleState)
-        setLoading(false)
+        setDrizzleIsLoading(false)
       }
     })
 
@@ -315,7 +317,7 @@ function App(props) {
   }, [])
 
   useEffect(() => {
-    if (!loading) {
+    if (!drizzleIsLoading) {
       mapboxgl.accessToken =
         "pk.eyJ1IjoiamVycnlkZWtvIiwiYSI6ImNqbWJqYWYzNzFqN3MzcWxrcnR1bHptdHgifQ.lwp1yCEfR-571xDbI_BK8g"
       const map = new mapboxgl.Map({
@@ -329,7 +331,7 @@ function App(props) {
 
       setMapboxMap(map)
     }
-  }, [loading])
+  }, [drizzleIsLoading])
 
   useEffect(() => {
     if (mapboxMap) {
@@ -366,6 +368,7 @@ function App(props) {
       drizzleState &&
       drizzleState.drizzleStatus.initialized
     ) {
+      setHexGridDataIsLoading(true)
       const hexGridDataCacheCallId = getHexGridDataCacheCallId(displayH3Ids)
       setHexGridDataId(hexGridDataCacheCallId)
     }
@@ -383,12 +386,13 @@ function App(props) {
         })
         updateHexGridDataLayout(newHexGridDataMap, displayH3Ids)
         setHexGridDataMap(newHexGridDataMap)
+        setHexGridDataIsLoading(false)
       }
     }
   }, [hexGridDataId, drizzleState])
 
   useEffect(() => {
-    if (!loading && selectedH3Id && drizzleState) {
+    if (!drizzleIsLoading && selectedH3Id && drizzleState) {
       if (hexGridDataMap && hexGridDataMap[selectedH3Id]) {
         setSelectedHexGridData(hexGridDataMap[selectedH3Id])
       } else {
@@ -405,14 +409,17 @@ function App(props) {
         }
       }
     }
-  }, [loading, selectedH3Id, drizzleState])
+  }, [drizzleIsLoading, selectedH3Id, drizzleState])
 
-  if (loading) {
+  if (drizzleIsLoading) {
     return "Loading Drizzle..."
   }
 
   return (
     <div className="App">
+      <div className="linear-loader-container">
+        <LinearLoader hidden={!hexGridDataIsLoading} />
+      </div>
       <div className="action-container">
         <div className="action-container_search-container">
           <div className="input-group mb-3">
