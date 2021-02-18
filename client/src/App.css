@@ -2,7 +2,7 @@
   position: relative;
 }
 
-.linear-loader-container {
+.absolute-top-container {
   position: absolute;
   top: 0%;
   width: 100vw;

@@ -5,6 +5,7 @@ import { polyfill, h3ToGeoBoundary, geoToH3, h3ToGeo } from "h3-js"
 import HexGridDataDisplayCard from "./components/HexGridDataDisplayCard"
 import HexGridDataEditCard from "./components/HexGridDataEditCard"
 import LinearLoader from "./components/LinearLoader/LinearLoader"
+import TextBanner from "./components/TextBanner/TextBanner"
 
 function App(props) {
   const [drizzleIsLoading, setDrizzleIsLoading] = useState(true)
@@ -16,6 +17,8 @@ function App(props) {
   const [selectedH3Id, setSelectedH3Id] = useState()
   const [selectedHexGridData, setSelectedHexGridData] = useState()
   const [hexGridDataId, setHexGridDataId] = useState(null)
+  const [transactionId, setTransactionId] = useState(null)
+  const [transactionStatus, setTransactionStatus] = useState(null)
   const [hexGridDataMap, setHexGridDataMap] = useState({})
   //Used to get infos from cache.
   const [displayH3Ids, setDisplayH3Ids] = useState([])
@@ -275,16 +278,7 @@ function App(props) {
       }
     )
 
-    const { transactions, transactionStack } = drizzleState
-    const txHash = transactionStack[transactionId]
-
-    if (txHash) {
-      console.log(
-        `Transaction status: ${
-          transactions[txHash] && transactions[txHash].status
-        }`
-      )
-    }
+    setTransactionId(transactionId)
   }
 
   function getHexGridDataCacheCallId(hexGridIds) {
@@ -375,6 +369,22 @@ function App(props) {
   }, [displayH3Ids])
 
   useEffect(() => {
+    if (transactionId) {
+      const { transactions, transactionStack } = drizzleState
+      const txHash = transactionStack[transactionId]
+
+      if (txHash) {
+        const transactionStatus =
+          transactions[txHash] && transactions[txHash].status
+        setTransactionStatus(transactionStatus)
+        if (transactionStatus === "success") {
+          setTransactionId(null)
+        }
+      }
+    }
+  }, [transactionId, drizzleState])
+
+  useEffect(() => {
     if (hexGridDataId) {
       const { HexGridStore } = drizzleState.contracts
       const hexGridDataItems =
@@ -417,8 +427,14 @@ function App(props) {
 
   return (
     <div className="App">
-      <div className="linear-loader-container">
+      <div className="absolute-top-container">
         <LinearLoader hidden={!hexGridDataIsLoading} />
+        <TextBanner
+          className={
+            transactionStatus === "success" ? "alert-success" : "alert-info"
+          }
+          text={transactionStatus && `Transaction Status: ${transactionStatus}`}
+        />
       </div>
       <div className="action-container">
         <div className="action-container_search-container">
