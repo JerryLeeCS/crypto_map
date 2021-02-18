@@ -451,32 +451,30 @@ function App(props) {
             </button>
           </div>
         </div>
-        {selectedHexGridData && isViewing && (
-          <HexGridDataDisplayCard
-            hexGridData={selectedHexGridData}
-            onEdit={() => {
-              setIsViewing(false)
-              setIsEditing(true)
-            }}
-            onClose={() => {
-              setSelectedH3Id(undefined)
-              setSelectedHexGridData(undefined)
-              setIsViewing(false)
-            }}
-          />
-        )}
-        {isEditing && (
-          <HexGridDataEditCard
-            onCreate={(hexGridData) => {
-              setHexGridData(hexGridData)
-              setIsEditing(false)
-            }}
-            onCancel={() => {
-              setIsEditing(false)
-              setIsViewing(true)
-            }}
-          />
-        )}
+        <HexGridDataDisplayCard
+          hexGridData={selectedHexGridData}
+          onEdit={() => {
+            setIsViewing(false)
+            setIsEditing(true)
+          }}
+          onClose={() => {
+            setSelectedH3Id(undefined)
+            setSelectedHexGridData(undefined)
+            setIsViewing(false)
+          }}
+          hidden={!(selectedHexGridData && isViewing)}
+        />
+        <HexGridDataEditCard
+          onCreate={(hexGridData) => {
+            setHexGridData(hexGridData)
+            setIsEditing(false)
+          }}
+          onCancel={() => {
+            setIsEditing(false)
+            setIsViewing(true)
+          }}
+          hidden={!isEditing}
+        />
       </div>
       <div className="mapbox-container">
         <div id="mapbox"></div>

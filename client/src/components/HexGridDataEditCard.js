@@ -36,7 +36,7 @@ function HexGridDataEditCard(props) {
   }
 
   return (
-    <div className="card">
+    <div className="card" hidden={props.hidden}>
       <div
         className="card-header text-center"
         style={{ backgroundColor: hexGridData.color, fontSize: "2rem" }}
@@ -98,7 +98,7 @@ function HexGridDataEditCard(props) {
         </p>
         <div className="row">
           <div className="collapse multi-collapse" id="emojiPickerDropdown">
-            <div className="card card-body">
+            <div className="card card-body p-0">
               <EmojiPicker
                 pickerStyle={{ width: "100%" }}
                 onEmojiClick={onEmojiClick}
@@ -133,6 +133,7 @@ HexGridDataEditCard.propTypes = {
   isCreateDisabled: PropTypes.bool,
   onCreate: PropTypes.func,
   onCancel: PropTypes.func,
+  hidden: PropTypes.bool,
 }
 
 export default HexGridDataEditCard

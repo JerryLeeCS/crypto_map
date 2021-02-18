@@ -8,7 +8,7 @@ function HexGridDataDisplayCard(props) {
     props.hexGridData.text === "" &&
     props.hexGridData.emoji === ""
   return (
-    <div className="card">
+    <div className="card" hidden={props.hidden}>
       <div
         className="card-header text-center"
         style={{
@@ -70,6 +70,7 @@ HexGridDataDisplayCard.propTypes = {
   isEditDisabled: PropTypes.bool,
   onEdit: PropTypes.func,
   onClose: PropTypes.func,
+  hidden: PropTypes.bool,
 }
 
 export default HexGridDataDisplayCard
