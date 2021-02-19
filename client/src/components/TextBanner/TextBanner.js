@@ -6,10 +6,12 @@ function TextBanner(props) {
   const [hidden, setHidden] = useState(false)
 
   useEffect(() => {
-    setHidden(false)
-    const timeout = setTimeout(() => setHidden(true), 4000)
-    return () => {
-      clearTimeout(timeout)
+    if (props.text) {
+      setHidden(false)
+      const timeout = setTimeout(() => setHidden(true), 4000)
+      return () => {
+        clearTimeout(timeout)
+      }
     }
   }, [props.text])
 
