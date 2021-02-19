@@ -468,6 +468,7 @@ function App(props) {
           onCreate={(hexGridData) => {
             setHexGridData(hexGridData)
             setIsEditing(false)
+            setSelectedH3Id(undefined)
           }}
           onCancel={() => {
             setIsEditing(false)

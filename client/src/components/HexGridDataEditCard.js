@@ -1,14 +1,15 @@
-import React, { useState } from "react"
+import React, { useEffect, useState } from "react"
 import PropTypes from "prop-types"
 import { CirclePicker } from "react-color"
 import EmojiPicker from "emoji-picker-react"
-
+const defaultHexGridData = {
+  color: "#000000",
+  text: "",
+  emoji:
+    "https://cdn.jsdelivr.net/gh/iamcal/emoji-data@master/img-apple-64/1f60a.png",
+}
 function HexGridDataEditCard(props) {
-  const [hexGridData, setHexGridData] = useState({
-    color: "#000000",
-    emoji:
-      "https://cdn.jsdelivr.net/gh/iamcal/emoji-data@master/img-apple-64/1f60a.png",
-  })
+  const [hexGridData, setHexGridData] = useState(defaultHexGridData)
 
   function onMessageChange(event) {
     setHexGridData((prev) => ({
@@ -53,6 +54,7 @@ function HexGridDataEditCard(props) {
             id="hexGridDataTextArea"
             rows="3"
             onChange={onMessageChange}
+            value={hexGridData.text}
           ></textarea>
         </div>
         <p>
@@ -111,7 +113,10 @@ function HexGridDataEditCard(props) {
           <button
             type="button"
             className="btn btn-light me-2"
-            onClick={() => props.onCreate(hexGridData)}
+            onClick={() => {
+              props.onCreate(hexGridData)
+              setHexGridData(defaultHexGridData)
+            }}
             disabled={props.isCreateDisabled}
           >
             Create

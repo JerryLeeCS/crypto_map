@@ -3,7 +3,7 @@ import PropTypes from "prop-types"
 import "./TextBanner.css"
 
 function TextBanner(props) {
-  const [hidden, setHidden] = useState(false)
+  const [hidden, setHidden] = useState(true)
 
   useEffect(() => {
     if (props.text) {
