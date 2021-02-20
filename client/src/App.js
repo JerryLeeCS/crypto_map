@@ -24,6 +24,13 @@ function App(props) {
   const [displayH3Ids, setDisplayH3Ids] = useState([])
   const h3ResolutionLevel = 7
 
+  const sourceId = "sourceId"
+  const layerId = "layerId"
+  const dataSourceColorId = "dataSourceColorId"
+  const dataLayerColorId = "dataLayerColorId"
+  const dataSourceEmojiId = "dataSourceEmojiId"
+  const dataLayerEmojiId = "dataLayerEmojiId"
+
   const updateHexGridLayout = () => {
     const { _sw: sw, _ne: ne } = mapboxMap.getBounds()
 
@@ -50,14 +57,11 @@ function App(props) {
           coordinates: [h3ToGeoBoundary(h3Id, true)],
         },
         properties: {
-          density: 0.4,
-          color: "#d3d3d3",
+          density: 0.2,
+          color: "#ffffff",
         },
       })),
     }
-
-    const sourceId = "sourceId"
-    const layerId = "layerId"
 
     if (mapboxMap.getLayer(layerId)) {
       mapboxMap.removeLayer(layerId)
@@ -80,6 +84,12 @@ function App(props) {
         "fill-opacity": ["get", "density"],
       },
     })
+
+    const dataColorLayer = mapboxMap.getLayer(dataLayerColorId)
+
+    if (dataColorLayer) {
+      mapboxMap.moveLayer(layerId, dataLayerColorId)
+    }
   }
 
   const updateHexGridDataLayout = async (hexGridDataMap, h3Ids) => {
@@ -165,12 +175,6 @@ function App(props) {
             }
           }),
       }
-
-      const dataSourceColorId = "dataSourceColorId"
-      const dataLayerColorId = "dataLayerColorId"
-
-      const dataSourceEmojiId = "dataSourceEmojiId"
-      const dataLayerEmojiId = "dataLayerEmojiId"
 
       if (mapboxMap.getLayer(dataLayerColorId)) {
         mapboxMap.removeLayer(dataLayerColorId)
