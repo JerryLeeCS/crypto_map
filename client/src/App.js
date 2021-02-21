@@ -17,6 +17,7 @@ function App(props) {
   const [selectedH3Id, setSelectedH3Id] = useState()
   const [selectedHexGridData, setSelectedHexGridData] = useState()
   const [hexGridDataId, setHexGridDataId] = useState(null)
+  const [hexGridDataH3Ids, setHexGridDataH3Ids] = useState([])
   const [transactionId, setTransactionId] = useState(null)
   const [transactionStatus, setTransactionStatus] = useState(null)
   const [hexGridDataMap, setHexGridDataMap] = useState({})
@@ -366,9 +367,18 @@ function App(props) {
       drizzleState &&
       drizzleState.drizzleStatus.initialized
     ) {
-      setHexGridDataIsLoading(true)
-      const hexGridDataCacheCallId = getHexGridDataCacheCallId(displayH3Ids)
-      setHexGridDataId(hexGridDataCacheCallId)
+      const hexGridDataH3Ids = displayH3Ids.filter(
+        (h3Id) => !hexGridDataMap[h3Id]
+      )
+
+      if (hexGridDataH3Ids.length > 0) {
+        setHexGridDataIsLoading(true)
+        setHexGridDataH3Ids(hexGridDataH3Ids)
+        const hexGridDataCacheCallId = getHexGridDataCacheCallId(
+          hexGridDataH3Ids
+        )
+        setHexGridDataId(hexGridDataCacheCallId)
+      }
     }
   }, [displayH3Ids])
 
@@ -394,8 +404,8 @@ function App(props) {
       const hexGridDataItems =
         HexGridStore["getHexGridDataItems"][hexGridDataId]
       if (hexGridDataItems && hexGridDataItems.value) {
-        const newHexGridDataMap = {}
-        displayH3Ids.forEach((hexGridId, index) => {
+        const newHexGridDataMap = hexGridDataMap
+        hexGridDataH3Ids.forEach((hexGridId, index) => {
           newHexGridDataMap[hexGridId] = hexGridDataItems.value[index]
         })
         updateHexGridDataLayout(newHexGridDataMap, displayH3Ids)
