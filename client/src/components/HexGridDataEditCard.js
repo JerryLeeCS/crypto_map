@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react"
+import React, { useState } from "react"
 import PropTypes from "prop-types"
 import { CirclePicker } from "react-color"
 import EmojiPicker from "emoji-picker-react"
@@ -57,55 +57,67 @@ function HexGridDataEditCard(props) {
             value={hexGridData.text}
           ></textarea>
         </div>
-        <p>
-          <a
-            className="btn btn-dark"
-            style={{
-              width: "100%",
-            }}
-            data-bs-toggle="collapse"
-            href="#colorPickerDropdown"
-            role="button"
-            aria-expanded="false"
-            aria-controls="colorPickerDropdown"
-          >
-            Pick a color
-          </a>
-        </p>
-        <div className="row">
-          <div
-            className="collapse multi-collapse mb-2"
-            id="colorPickerDropdown"
-          >
-            <div className="card card-body">
-              <CirclePicker width="100%" onChange={onColorChange} />
+
+        <div className="accordion" id="colorEmojiAccordion">
+          <div className="accordion-item">
+            <h2 className="accordion-header" id="colorPickerHeader">
+              <button
+                className="btn btn-dark"
+                style={{
+                  width: "100%",
+                }}
+                type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#colorPickerCollapse"
+                aria-expanded="true"
+                aria-controls="colorPickerCollapse"
+              >
+                Pick a color
+              </button>
+            </h2>
+            <div
+              id="colorPickerCollapse"
+              className="accordion-collapse collapse show"
+              aria-labelledby="colorPickerHeader"
+              data-bs-parent="#colorEmojiAccordion"
+            >
+              <div className="accordion-body">
+                <CirclePicker width="100%" onChange={onColorChange} />
+              </div>
             </div>
           </div>
-        </div>
-
-        <p>
-          <a
-            className="btn btn-dark"
-            style={{
-              width: "100%",
-            }}
-            data-bs-toggle="collapse"
-            href="#emojiPickerDropdown"
-            role="button"
-            aria-expanded="false"
-            aria-controls="emojiPickerDropdown"
-          >
-            Pick an emoji
-          </a>
-        </p>
-        <div className="row">
-          <div className="collapse multi-collapse" id="emojiPickerDropdown">
-            <div className="card card-body p-0">
+          <div className="accordion-item">
+            <h2 className="accordion-header" id="emojiPickerHeader">
+              <button
+                className="btn btn-dark"
+                style={{
+                  width: "100%",
+                }}
+                type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#emojiPickerCollapse"
+                aria-expanded="false"
+                aria-controls="emojiPickerCollapse"
+              >
+                Pick an emoji
+              </button>
+            </h2>
+            <div
+              id="emojiPickerCollapse"
+              className="accordion-collapse collapse"
+              aria-labelledby="emojiPickerHeader"
+              data-bs-parent="#colorEmojiAccordion"
+            >
               <EmojiPicker
                 pickerStyle={{ width: "100%" }}
                 onEmojiClick={onEmojiClick}
               />
             </div>
+          </div>
+        </div>
+        <div className="row">
+          <div className="collapse multi-collapse" id="emojiPickerDropdown">
+            <div className="card card-body p-0"></div>
           </div>
         </div>
 
