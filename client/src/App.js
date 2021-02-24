@@ -120,7 +120,9 @@ function App(props) {
               hexGridDataMap[h3Id].emoji,
               function (error, image) {
                 if (error) throw error
-                mapboxMap.addImage(emojiName, image)
+                if (!mapboxMap.hasImage(emojiName)) {
+                  mapboxMap.addImage(emojiName, image)
+                }
               }
             )
           }
