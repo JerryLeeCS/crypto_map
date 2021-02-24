@@ -37,10 +37,22 @@ function HexGridDataEditCard(props) {
   }
 
   return (
-    <div className="card" hidden={props.hidden}>
+    <div
+      className="card"
+      hidden={props.hidden}
+      style={{
+        overflow: "auto",
+        maxHeight: "calc(100vh - calc(10vh + 1rem + 36px))",
+      }}
+    >
       <div
         className="card-header text-center"
-        style={{ backgroundColor: hexGridData.color, fontSize: "2rem" }}
+        style={{
+          position: "sticky",
+          top: 0,
+          backgroundColor: hexGridData.color,
+          fontSize: "2rem",
+        }}
       >
         <img src={hexGridData.emoji}></img>
       </div>
