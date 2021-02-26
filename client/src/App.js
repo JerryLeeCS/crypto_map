@@ -457,14 +457,19 @@ function App(props) {
     if (
       drizzleState &&
       drizzleState.drizzleStatus &&
-      drizzleState.drizzleStatus.initialized
+      drizzleState.drizzleStatus.initialized &&
+      hexGridDataMap
     ) {
       const { HexGridStore } = drizzleState.contracts
       const getHexGriDataItems = HexGridStore.getHexGridDataItems
 
       const hexGridCallDataMap = hexGridDataCacheCallIds.reduce(
         (accum, callId) => {
-          const { args, value } = getHexGriDataItems[callId]
+          const hexGridData = getHexGriDataItems[callId]
+          if (!hexGridData) {
+            return accum
+          }
+          const { args, value } = hexGridData
           const h3Ids = args[0]
 
           h3Ids.forEach((h3Id, index) => {
