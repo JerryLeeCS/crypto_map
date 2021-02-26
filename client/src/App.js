@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react"
+import { useState, useEffect } from "react"
 import "./App.css"
 import mapboxgl from "mapbox-gl/dist/mapbox-gl.js"
 import { polyfill, h3ToGeoBoundary, geoToH3, h3ToGeo } from "h3-js"
