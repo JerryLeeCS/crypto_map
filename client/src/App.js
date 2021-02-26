@@ -111,7 +111,7 @@ function App(props) {
             hexGridDataMap[h3Id].emoji &&
             hexGridDataMap[h3Id].color
         )
-        .map((h3Id) => {
+        .forEach((h3Id) => {
           const emojiUrlPath = hexGridDataMap[h3Id].emoji.split("/")
           const emojiName = emojiUrlPath[emojiUrlPath.length - 1]
 
@@ -323,19 +323,21 @@ function App(props) {
   useEffect(() => {
     const { drizzle } = props
 
-    const unsubscribe = drizzle.store.subscribe(() => {
-      const drizzleState = drizzle.store.getState()
+    if (drizzle) {
+      const unsubscribe = drizzle.store.subscribe(() => {
+        const drizzleState = drizzle.store.getState()
 
-      if (drizzleState.drizzleStatus.initialized) {
-        setDrizzleState(drizzleState)
-        setDrizzleIsLoading(false)
+        if (drizzleState.drizzleStatus.initialized) {
+          setDrizzleState(drizzleState)
+          setDrizzleIsLoading(false)
+        }
+      })
+
+      return () => {
+        unsubscribe()
       }
-    })
-
-    return () => {
-      unsubscribe()
     }
-  }, [])
+  }, [props])
 
   useEffect(() => {
     if (!drizzleIsLoading) {
@@ -376,11 +378,11 @@ function App(props) {
         mapboxMap.off("click", selectHexGrid)
       }
     }
-  }, [mapboxMap])
+  }, [mapboxMap]) // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     updateSelectedHexGridLayout()
-  }, [selectedH3Id])
+  }, [selectedH3Id]) // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     if (
@@ -404,7 +406,7 @@ function App(props) {
         )
       }
     }
-  }, [displayH3Ids])
+  }, [displayH3Ids]) // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     if (transactionId) {
@@ -451,7 +453,7 @@ function App(props) {
         }
       }
     }
-  }, [drizzleIsLoading, selectedH3Id, drizzleState])
+  }, [drizzleIsLoading, selectedH3Id, drizzleState]) // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     if (
@@ -494,13 +496,13 @@ function App(props) {
         })
       }
     }
-  }, [drizzleState])
+  }, [drizzleState]) // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     if (displayH3Ids && hexGridDataMap && mapboxMap && mapboxMap["_loaded"]) {
       updateHexGridDataLayout(hexGridDataMap, displayH3Ids)
     }
-  }, [displayH3Ids, hexGridDataMap, mapboxMap && mapboxMap["_loaded"]])
+  }, [displayH3Ids, hexGridDataMap, mapboxMap && mapboxMap["_loaded"]]) // eslint-disable-line react-hooks/exhaustive-deps
 
   if (drizzleIsLoading) {
     return "Loading Drizzle..."
