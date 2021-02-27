@@ -115,7 +115,7 @@ function App(props) {
           const emojiUrlPath = hexGridDataMap[h3Id].emoji.split("/")
           const emojiName = emojiUrlPath[emojiUrlPath.length - 1]
 
-          if (!imageNameMap[emojiName]) {
+          if (!imageNameMap[emojiName] && !mapboxMap.hasImage(emojiName)) {
             mapboxMap.loadImage(
               hexGridDataMap[h3Id].emoji,
               function (error, image) {
@@ -127,6 +127,7 @@ function App(props) {
             )
           }
         })
+
       const hexGridColorData = {
         type: "FeatureCollection",
         features: h3Ids
