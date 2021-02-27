@@ -505,6 +505,33 @@ function App(props) {
     }
   }, [displayH3Ids, hexGridDataMap, mapboxMap && mapboxMap["_loaded"]]) // eslint-disable-line react-hooks/exhaustive-deps
 
+  useEffect(() => {
+    if (mapboxMap && window.google) {
+      var { lng, lat } = mapboxMap.getCenter()
+      const autoCompleteInput = document.getElementById("auto-complete-input")
+      const autoCompleteOption = {
+        origin: {
+          lat,
+          lng,
+        },
+      }
+      const autoComplete = new window.google.maps.places.Autocomplete(
+        autoCompleteInput,
+        autoCompleteOption
+      )
+
+      autoComplete.addListener("place_changed", () => {
+        const place = autoComplete.getPlace()
+        if (place.geometry) {
+          const location = place.geometry.location
+          const lat = location.lat()
+          const lng = location.lng()
+          mapboxMap.setCenter([lng, lat])
+        }
+      })
+    }
+  }, [mapboxMap, window.google])
+
   if (drizzleIsLoading) {
     return "Loading Drizzle..."
   }
@@ -529,6 +556,7 @@ function App(props) {
               placeholder="Location"
               aria-label="Location"
               aria-describedby="button-addon2"
+              id="auto-complete-input"
             />
             <button className="btn btn-dark" type="button" id="button-addon2">
               Search
