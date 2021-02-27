@@ -558,9 +558,6 @@ function App(props) {
               aria-describedby="button-addon2"
               id="auto-complete-input"
             />
-            <button className="btn btn-dark" type="button" id="button-addon2">
-              Search
-            </button>
           </div>
         </div>
         <HexGridDataDisplayCard
