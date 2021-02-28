@@ -5,39 +5,40 @@ contract("HexGridStore", (accounts) => {
     const hexGridStore = await HexGridStore.deployed()
     const hexGridData = {
       id: "1",
-      color: "#ffffff",
-      emoji: "😟",
-      text: "Just testing",
+      Color: "#ffffff",
+      Emoji: "😟",
+      Text: "Just testing",
     }
 
     await hexGridStore.addHexGridData(
       hexGridData.id,
-      hexGridData.color,
-      hexGridData.emoji,
-      hexGridData.text,
+      hexGridData.Color,
+      hexGridData.Emoji,
+      hexGridData.Text,
       {
         from: accounts[0],
       }
     )
 
-    const storedData = await hexGridStore.hexGridDataItems.call(hexGridData.id)
+    const hexGrids = await hexGridStore.getHexGrids.call([hexGridData.id])
+    const hexGrid = hexGrids[0]
 
     assert.equal(
-      storedData.color,
-      hexGridData.color,
-      "hexGridData.color was not stored."
+      hexGrid.Color,
+      hexGridData.Color,
+      "hexGridData.Color was not stored."
     )
 
     assert.equal(
-      storedData.emoji,
-      hexGridData.emoji,
-      "hexGridData.emoji was not stored."
+      hexGrid.Emoji,
+      hexGridData.Emoji,
+      "hexGridData.Emoji was not stored."
     )
 
     assert.equal(
-      storedData.text,
-      hexGridData.text,
-      "hexGridData.text was not stored."
+      hexGrid.Text,
+      hexGridData.Text,
+      "hexGridData.Text was not stored."
     )
   })
 
@@ -46,23 +47,23 @@ contract("HexGridStore", (accounts) => {
       const hexGridStore = await HexGridStore.deployed()
       const hexGridDataA = {
         id: "1",
-        color: "#ffffff",
-        emoji: "😟",
-        text: "Just testing",
+        Color: "#ffffff",
+        Emoji: "😟",
+        Text: "Just testing",
       }
 
       const hexGridDataB = {
         id: "1",
-        color: "#000000",
-        emoji: "😏",
-        text: "Just testing out",
+        Color: "#000000",
+        Emoji: "😏",
+        Text: "Just testing out",
       }
 
       await hexGridStore.addHexGridData(
         hexGridDataA.id,
-        hexGridDataA.color,
-        hexGridDataA.emoji,
-        hexGridDataA.text,
+        hexGridDataA.Color,
+        hexGridDataA.Emoji,
+        hexGridDataA.Text,
         {
           from: accounts[0],
         }
@@ -70,9 +71,9 @@ contract("HexGridStore", (accounts) => {
 
       await hexGridStore.addHexGridData(
         hexGridDataB.id,
-        hexGridDataB.color,
-        hexGridDataB.emoji,
-        hexGridDataB.text,
+        hexGridDataB.Color,
+        hexGridDataB.Emoji,
+        hexGridDataB.Text,
         {
           from: accounts[0],
         }
@@ -91,23 +92,23 @@ contract("HexGridStore", (accounts) => {
       const hexGridStore = await HexGridStore.deployed()
       const hexGridDataA = {
         id: "1",
-        color: "#ffffff",
-        emoji: "😟",
-        text: "Just testing",
+        Color: "#ffffff",
+        Emoji: "😟",
+        Text: "Just testing",
       }
 
       const hexGridDataB = {
         id: "1",
-        color: "#000000",
-        emoji: "😏",
-        text: "Just testing out",
+        Color: "#000000",
+        Emoji: "😏",
+        Text: "Just testing out",
       }
 
       await hexGridStore.addHexGridData(
         hexGridDataA.id,
-        hexGridDataA.color,
-        hexGridDataA.emoji,
-        hexGridDataA.text,
+        hexGridDataA.Color,
+        hexGridDataA.Emoji,
+        hexGridDataA.Text,
         {
           from: accounts[0],
         }
@@ -115,26 +116,26 @@ contract("HexGridStore", (accounts) => {
 
       await hexGridStore.addHexGridData(
         hexGridDataB.id,
-        hexGridDataB.color,
-        hexGridDataB.emoji,
-        hexGridDataB.text,
+        hexGridDataB.Color,
+        hexGridDataB.Emoji,
+        hexGridDataB.Text,
         {
           from: accounts[0],
         }
       )
 
-      const hexGridDataItems = await getHexGridDataItems([
+      const getHexGrids = await getHexGridDataItems([
         hexGridDataA.id,
         hexGridDataB.id,
       ])
 
       assert.equal(
-        hexGridDataItems[0].id,
+        getHexGrids[0].id,
         hexGridDataA.id,
         "Stored value A and got item A should be the same."
       )
       assert.equal(
-        hexGridDataItems[1].id,
+        getHexGrids[1].id,
         hexGridDataB.id,
         "Stored value B and got item B should be the same."
       )
