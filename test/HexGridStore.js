@@ -1,13 +1,35 @@
 const HexGridStore = artifacts.require("../contracts/HexGridStore.sol")
 
 contract("HexGridStore", (accounts) => {
+  it("should getHexGrids with empty mapping.", async () => {
+    const hexGridStore = await HexGridStore.deployed()
+    const hexGrids = await hexGridStore.getHexGrids.call(["1", "2", "3"])
+    assert.equal(
+      hexGrids[0].Color,
+      "",
+      "hexGrids[0].Color shouldn't have any data."
+    )
+
+    assert.equal(
+      hexGrids[1].Emoji,
+      "",
+      "hexGrids[1].Color shouldn't have any data."
+    )
+
+    assert.equal(
+      hexGrids[2].Text,
+      "",
+      "hexGrids[2].Text shouldn't have any data."
+    )
+  })
+
   it("should store hexGridData in HexGridStore.", async () => {
     const hexGridStore = await HexGridStore.deployed()
     const hexGridData = {
       id: "1",
       Color: "#ffffff",
       Emoji: "😟",
-      Text: "Just testing",
+      Text: "1Just testing",
     }
 
     await hexGridStore.addHexGridData(
@@ -49,14 +71,14 @@ contract("HexGridStore", (accounts) => {
         id: "1",
         Color: "#ffffff",
         Emoji: "😟",
-        Text: "Just testing",
+        Text: "2Just testing",
       }
 
       const hexGridDataB = {
         id: "1",
         Color: "#000000",
         Emoji: "😏",
-        Text: "Just testing out",
+        Text: "2Just testing out",
       }
 
       await hexGridStore.addHexGridData(
@@ -87,21 +109,21 @@ contract("HexGridStore", (accounts) => {
     }
   })
 
-  it("should getHexGridDataItems.", async () => {
+  it("should getHexGrids.", async () => {
     try {
       const hexGridStore = await HexGridStore.deployed()
       const hexGridDataA = {
-        id: "1",
+        id: "2",
         Color: "#ffffff",
         Emoji: "😟",
-        Text: "Just testing",
+        Text: "3",
       }
 
       const hexGridDataB = {
-        id: "1",
+        id: "3",
         Color: "#000000",
         Emoji: "😏",
-        Text: "Just testing out",
+        Text: "3",
       }
 
       await hexGridStore.addHexGridData(
@@ -124,21 +146,23 @@ contract("HexGridStore", (accounts) => {
         }
       )
 
-      const getHexGrids = await getHexGridDataItems([
+      const hexGrids = await hexGridStore.getHexGrids.call([
         hexGridDataA.id,
         hexGridDataB.id,
       ])
 
       assert.equal(
-        getHexGrids[0].id,
-        hexGridDataA.id,
-        "Stored value A and got item A should be the same."
+        hexGrids[0].Emoji,
+        hexGridDataA.Emoji,
+        "Stored Emoji A and got item A should be the same."
       )
       assert.equal(
-        getHexGrids[1].id,
-        hexGridDataB.id,
-        "Stored value B and got item B should be the same."
+        hexGrids[1].Emoji,
+        hexGridDataB.Emoji,
+        "Stored Emoji B and got item B should be the same."
       )
-    } catch (error) {}
+    } catch (error) {
+      console.error(error)
+    }
   })
 })

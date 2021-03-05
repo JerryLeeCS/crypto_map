@@ -1,23 +1,23 @@
 pragma solidity ^0.5.0;
 pragma experimental ABIEncoderV2;
 
-library SharedStructs {
-    struct HexGrid {
-        string Color;
-        string Text;
-        string Emoji;
-    }    
-}
-
 contract HexGrid {
     string public Color;
     string public Text;
     string public Emoji;
+    bool public exists;
+
+    struct HexGridStruct {
+        string Color;
+        string Text;
+        string Emoji;
+    }  
 
     constructor (string memory color, string memory text, string memory emoji) public {
         Color = color;
         Text = text;
         Emoji = emoji;
+        exists = true;
     }
 
     function getColor() public view returns(string memory) {
@@ -32,8 +32,8 @@ contract HexGrid {
         return Emoji;
     }
 
-    function getData() public view returns (SharedStructs.HexGrid memory) {
-        return SharedStructs.HexGrid(Color, Text, Emoji);
+    function getData() public view returns (HexGridStruct memory) {
+        return HexGridStruct(Color, Text, Emoji);
     }
 }
 
@@ -41,6 +41,7 @@ contract HexGridStore {
     struct HexGridData {
         HexGrid HexGridAddress;
         uint256 expirationDate;
+        bool exists;
     }
 
     mapping (string => HexGridData) public hexGridDataItems;
@@ -52,24 +53,22 @@ contract HexGridStore {
         }
 
         HexGrid hexGridAddress = new HexGrid(color, text, emoji);
-        hexGridDataItems[hexGridId] = HexGridData(hexGridAddress, now + 1 days);
+        hexGridDataItems[hexGridId] = HexGridData(hexGridAddress, now + 1 days, true);
     }
 
-    function getHexGrids(string[] memory hexGridIds) public view returns(SharedStructs.HexGrid[] memory){
+    function getHexGrids(string[] memory hexGridIds) public view returns(HexGrid.HexGridStruct[] memory){
         uint len = hexGridIds.length;
-        HexGrid[] memory hexGridAddresses = new HexGrid[](len);
-        SharedStructs.HexGrid[] memory hexGrids = new SharedStructs.HexGrid[](len); 
+        HexGrid.HexGridStruct[] memory hexGrids = new HexGrid.HexGridStruct[](len); 
 
         for (uint i = 0; i < len; i++) {
             string memory hexGridId = hexGridIds[i];
-            hexGridAddresses[i] = hexGridDataItems[hexGridId].HexGridAddress;
+            if (hexGridDataItems[hexGridId].exists == true) {
+                HexGrid iHexGrid = HexGrid(hexGridDataItems[hexGridId].HexGridAddress);
+                if (iHexGrid.exists() == true) {
+                    hexGrids[i] = iHexGrid.getData();
+                }
+            } 
         }
-
-        for (uint i = 0; i < len; i++) {
-            HexGrid iHexGrid = HexGrid(hexGridAddresses[i]);
-            hexGrids[i] = iHexGrid.getData();
-        }
-
         return hexGrids;
     }
 }

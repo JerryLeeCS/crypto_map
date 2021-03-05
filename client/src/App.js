@@ -108,16 +108,16 @@ function App(props) {
           (h3Id) =>
             hexGridDataMap &&
             hexGridDataMap[h3Id] &&
-            hexGridDataMap[h3Id].emoji &&
-            hexGridDataMap[h3Id].color
+            hexGridDataMap[h3Id].Emoji &&
+            hexGridDataMap[h3Id].Color
         )
         .forEach((h3Id) => {
-          const emojiUrlPath = hexGridDataMap[h3Id].emoji.split("/")
+          const emojiUrlPath = hexGridDataMap[h3Id].Emoji.split("/")
           const emojiName = emojiUrlPath[emojiUrlPath.length - 1]
 
           if (!imageNameMap[emojiName] && !mapboxMap.hasImage(emojiName)) {
             mapboxMap.loadImage(
-              hexGridDataMap[h3Id].emoji,
+              hexGridDataMap[h3Id].Emoji,
               function (error, image) {
                 if (error) throw error
                 if (!mapboxMap.hasImage(emojiName)) {
@@ -135,8 +135,8 @@ function App(props) {
             (h3Id) =>
               hexGridDataMap &&
               hexGridDataMap[h3Id] &&
-              hexGridDataMap[h3Id].emoji &&
-              hexGridDataMap[h3Id].color
+              hexGridDataMap[h3Id].Emoji &&
+              hexGridDataMap[h3Id].Color
           )
           .map((h3Id) => ({
             type: "Feature",
@@ -146,7 +146,7 @@ function App(props) {
             },
             properties: {
               density: 0.3,
-              color: hexGridDataMap[h3Id].color,
+              color: hexGridDataMap[h3Id].Color,
             },
           })),
       }
@@ -158,12 +158,12 @@ function App(props) {
             (h3Id) =>
               hexGridDataMap &&
               hexGridDataMap[h3Id] &&
-              hexGridDataMap[h3Id].emoji &&
-              hexGridDataMap[h3Id].color
+              hexGridDataMap[h3Id].Emoji &&
+              hexGridDataMap[h3Id].Color
           )
           .map((h3Id) => {
             const [lat, lng] = h3ToGeo(h3Id)
-            const emojiUrlPath = hexGridDataMap[h3Id].emoji.split("/")
+            const emojiUrlPath = hexGridDataMap[h3Id].Emoji.split("/")
             const emojiName = emojiUrlPath[emojiUrlPath.length - 1]
 
             return {
@@ -290,12 +290,9 @@ function App(props) {
 
   function getHexGridDataCacheCallId(hexGridIds) {
     const contract = props.drizzle.contracts.HexGridStore
-    const dataId = contract.methods["getHexGridDataItems"].cacheCall(
-      hexGridIds,
-      {
-        from: drizzleState.accounts[0],
-      }
-    )
+    const dataId = contract.methods["getHexGrids"].cacheCall(hexGridIds, {
+      from: drizzleState.accounts[0],
+    })
 
     return dataId
   }
@@ -309,12 +306,7 @@ function App(props) {
       return true
     }
 
-    if (
-      a.color !== b.color ||
-      a.emoji !== b.emoji ||
-      a.expirationDate !== b.expirationDate ||
-      a.text !== b.text
-    ) {
+    if (a.Color !== b.Color || a.Emoji !== b.Emoji || a.Text !== b.Text) {
       return true
     }
 
@@ -428,7 +420,7 @@ function App(props) {
   useEffect(() => {
     if (hexGridDataId) {
       const { HexGridStore } = drizzleState.contracts
-      const hexGridDataItems = HexGridStore.getHexGridDataItems[hexGridDataId]
+      const hexGridDataItems = HexGridStore.getHexGrids[hexGridDataId]
       if (hexGridDataItems && hexGridDataItems.value) {
         setHexGridDataIsLoading(false)
         setHexGridDataId(null)
@@ -464,21 +456,29 @@ function App(props) {
       hexGridDataMap
     ) {
       const { HexGridStore } = drizzleState.contracts
-      const getHexGriDataItems = HexGridStore.getHexGridDataItems
+      const getHexGrids = HexGridStore.getHexGrids
 
       const hexGridCallDataMap = hexGridDataCacheCallIds.reduce(
         (accum, callId) => {
-          const hexGridData = getHexGriDataItems[callId]
+          const hexGridData = getHexGrids[callId]
           if (!hexGridData) {
             return accum
           }
-          const { args, value } = hexGridData
-          const h3Ids = args[0]
+          const { args, value, error } = hexGridData
 
-          h3Ids.forEach((h3Id, index) => {
-            const hexGridData = value[index]
-            accum[h3Id] = hexGridData
-          })
+          if (error) {
+            console.log(error.message)
+            return accum
+          }
+
+          if (args && value && args[0]) {
+            const h3Ids = args[0]
+
+            h3Ids.forEach((h3Id, index) => {
+              const hexGridData = value[index]
+              accum[h3Id] = hexGridData
+            })
+          }
           return accum
         },
         {}

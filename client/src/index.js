@@ -4,11 +4,10 @@ import "./index.css"
 import App from "./App"
 import reportWebVitals from "./reportWebVitals"
 import { Drizzle } from "@drizzle/store"
-import MyStringStore from "./contracts/MyStringStore.json"
 import HexGridStore from "./contracts/HexGridStore.json"
 
 const options = {
-  contracts: [MyStringStore, HexGridStore],
+  contracts: [HexGridStore],
   web3: {
     fallback: {
       type: "ws",
@@ -18,6 +17,8 @@ const options = {
 }
 
 const drizzle = new Drizzle(options)
+
+console.log("drizzle ", drizzle)
 
 ReactDOM.render(
   <React.StrictMode>
