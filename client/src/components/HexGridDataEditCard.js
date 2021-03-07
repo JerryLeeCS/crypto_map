@@ -50,13 +50,13 @@ function HexGridDataEditCard(props) {
         style={{
           position: "sticky",
           top: 0,
-          backgroundColor: hexGridData.color,
+          backgroundColor: hexGridData.Color,
           fontSize: "2rem",
         }}
       >
-        <img src={hexGridData.emoji}></img>
+        <img src={hexGridData.Emoji}></img>
       </div>
-      <div className="card-body" style={{ borderColor: hexGridData.color }}>
+      <div className="card-body" style={{ borderColor: hexGridData.Color }}>
         <div className="mb-3">
           <label htmlFor="hexGridDataTextArea" className="form-label">
             message
@@ -66,7 +66,7 @@ function HexGridDataEditCard(props) {
             id="hexGridDataTextArea"
             rows="3"
             onChange={onMessageChange}
-            value={hexGridData.text}
+            value={hexGridData.Text}
           ></textarea>
         </div>
 

@@ -4,37 +4,37 @@ import PropTypes from "prop-types"
 function HexGridDataDisplayCard(props) {
   const hexGridDataIsEmpty =
     props.hexGridData &&
-    props.hexGridData.color === "" &&
-    props.hexGridData.text === "" &&
-    props.hexGridData.emoji === ""
+    props.hexGridData.Color === "" &&
+    props.hexGridData.Text === "" &&
+    props.hexGridData.Emoji === ""
   return (
     <div className="card" hidden={props.hidden}>
       <div
         className="card-header text-center"
         style={{
           backgroundColor:
-            props.hexGridData && props.hexGridData.color
-              ? props.hexGridData.color
+            props.hexGridData && props.hexGridData.Color
+              ? props.hexGridData.Color
               : "",
           fontSize: "2rem",
         }}
       >
-        {props.hexGridData && props.hexGridData.emoji && (
-          <img src={props.hexGridData.emoji}></img>
+        {props.hexGridData && props.hexGridData.Emoji && (
+          <img src={props.hexGridData.Emoji}></img>
         )}
       </div>
       <div
         className="card-body"
         style={{
           borderColor:
-            props.hexGridData && props.hexGridData.color
-              ? props.hexGridData.color
+            props.hexGridData && props.hexGridData.Color
+              ? props.hexGridData.Color
               : "",
         }}
       >
         {!hexGridDataIsEmpty && (
           <p className="card-text">
-            {props.hexGridData && props.hexGridData.text}
+            {props.hexGridData && props.hexGridData.Text}
           </p>
         )}
         <div className="card_action-container text-end">
