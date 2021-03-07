@@ -3,9 +3,9 @@ import PropTypes from "prop-types"
 import { CirclePicker } from "react-color"
 import EmojiPicker from "emoji-picker-react"
 const defaultHexGridData = {
-  color: "#000000",
-  text: "",
-  emoji:
+  Color: "#000000",
+  Text: "",
+  Emoji:
     "https://cdn.jsdelivr.net/gh/iamcal/emoji-data@master/img-apple-64/1f60a.png",
 }
 function HexGridDataEditCard(props) {
@@ -14,25 +14,25 @@ function HexGridDataEditCard(props) {
   function onMessageChange(event) {
     setHexGridData((prev) => ({
       ...prev,
-      text: event.target.value,
+      Text: event.target.value,
     }))
   }
 
-  function onColorChange({ hex: color }) {
+  function onColorChange({ hex: Color }) {
     setHexGridData((prev) => ({
       ...prev,
-      color,
+      Color,
     }))
   }
 
   function onEmojiClick(event) {
-    const emoji =
+    const Emoji =
       event.target.type === "button"
         ? event.target.firstChild.currentSrc
         : event.target.currentSrc
     setHexGridData((prev) => ({
       ...prev,
-      emoji,
+      Emoji,
     }))
   }
 

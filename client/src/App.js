@@ -273,13 +273,13 @@ function App(props) {
 
   function setHexGridData(hexGridData) {
     const contract = props.drizzle.contracts.HexGridStore
-    const { color, emoji, text } = hexGridData
+    const { Color, Emoji, Text } = hexGridData
 
     const transactionId = contract.methods["addHexGridData"].cacheSend(
       selectedH3Id,
-      color,
-      emoji,
-      text,
+      Color,
+      Emoji,
+      Text,
       {
         from: drizzleState.accounts[0],
       }
