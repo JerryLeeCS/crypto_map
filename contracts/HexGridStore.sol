@@ -5,18 +5,21 @@ contract HexGrid {
     string public Color;
     string public Text;
     string public Emoji;
+    uint256 public CreatedDate;
     bool public exists;
 
     struct HexGridStruct {
         string Color;
         string Text;
         string Emoji;
+        uint256 CreatedDate;
     }  
 
     constructor (string memory color, string memory text, string memory emoji) public {
         Color = color;
         Text = text;
         Emoji = emoji;
+        CreatedDate = now;
         exists = true;
     }
 
@@ -32,8 +35,12 @@ contract HexGrid {
         return Emoji;
     }
 
+    function getCreatedDate() public view returns (uint256) {
+        return CreatedDate;
+    }
+
     function getData() public view returns (HexGridStruct memory) {
-        return HexGridStruct(Color, Text, Emoji);
+        return HexGridStruct(Color, Text, Emoji, CreatedDate);
     }
 }
 
