@@ -20,9 +20,12 @@ function App(props) {
   const [hexGridDataId, setHexGridDataId] = useState(null)
   const [hexGridDataCacheCallIds, setHexGridDataCacheCallIds] = useState([])
   const [transactionId, setTransactionId] = useState(null)
-  const [transactionStatus, setTransactionStatus] = useState(null)
   const [hexGridDataMap, setHexGridDataMap] = useState({})
   const [displayH3Ids, setDisplayH3Ids] = useState([])
+  const [textBannerInfo, setTextBannerInfo] = useState({
+    className: "alert-info",
+    text: "",
+  })
   const h3ResolutionLevel = 7
 
   const sourceId = "sourceId"
@@ -31,6 +34,8 @@ function App(props) {
   const dataLayerColorId = "dataLayerColorId"
   const dataSourceEmojiId = "dataSourceEmojiId"
   const dataLayerEmojiId = "dataLayerEmojiId"
+
+  const textLengthLimit = 140
 
   const updateHexGridLayout = () => {
     const { _sw: sw, _ne: ne } = mapboxMap.getBounds()
@@ -275,6 +280,14 @@ function App(props) {
     const contract = props.drizzle.contracts.HexGridStore
     const { Color, Emoji, Text } = hexGridData
 
+    if (Text.length > textLengthLimit) {
+      setTextBannerInfo({
+        className: "alert-danger",
+        text: `Text cannot be longer than ${textLengthLimit}.`,
+      })
+      return
+    }
+
     const transactionId = contract.methods["addHexGridData"].cacheSend(
       selectedH3Id,
       Color,
@@ -409,9 +422,17 @@ function App(props) {
       if (txHash) {
         const transactionStatus =
           transactions[txHash] && transactions[txHash].status
-        setTransactionStatus(transactionStatus)
         if (transactionStatus === "success") {
+          setTextBannerInfo({
+            className: "alert-success",
+            text: `Transaction Statue: ${transactionStatus}`,
+          })
           setTransactionId(null)
+        } else if (transactionStatus) {
+          setTextBannerInfo({
+            className: "alert-info",
+            text: `Transaction Status: ${transactionStatus}`,
+          })
         }
       }
     }
@@ -541,10 +562,8 @@ function App(props) {
       <div className="absolute-top-container">
         <LinearLoader hidden={!hexGridDataIsLoading} />
         <TextBanner
-          className={
-            transactionStatus === "success" ? "alert-success" : "alert-info"
-          }
-          text={transactionStatus && `Transaction Status: ${transactionStatus}`}
+          className={textBannerInfo.className}
+          text={textBannerInfo.text}
         />
       </div>
       <div className="action-container">
@@ -584,6 +603,7 @@ function App(props) {
             setIsViewing(true)
           }}
           hidden={!isEditing}
+          textLengthLimit={textLengthLimit}
         />
       </div>
       <div className="mapbox-container">

@@ -8,6 +8,7 @@ const defaultHexGridData = {
   Emoji:
     "https://cdn.jsdelivr.net/gh/iamcal/emoji-data@master/img-apple-64/1f60a.png",
 }
+
 function HexGridDataEditCard(props) {
   const [hexGridData, setHexGridData] = useState(defaultHexGridData)
 
@@ -67,7 +68,13 @@ function HexGridDataEditCard(props) {
             rows="3"
             onChange={onMessageChange}
             value={hexGridData.Text}
+            maxLength={props.textLengthLimit}
+            required
           ></textarea>
+          <small className="form-text text-muted">
+            {hexGridData.Text ? hexGridData.Text.length : 0}/
+            {props.textLengthLimit}
+          </small>
         </div>
 
         <div className="accordion" id="colorEmojiAccordion">
@@ -163,6 +170,7 @@ HexGridDataEditCard.propTypes = {
   onCreate: PropTypes.func,
   onCancel: PropTypes.func,
   hidden: PropTypes.bool,
+  textLengthLimit: PropTypes.string,
 }
 
 export default HexGridDataEditCard
