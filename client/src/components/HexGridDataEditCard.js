@@ -170,7 +170,7 @@ HexGridDataEditCard.propTypes = {
   onCreate: PropTypes.func,
   onCancel: PropTypes.func,
   hidden: PropTypes.bool,
-  textLengthLimit: PropTypes.string,
+  textLengthLimit: PropTypes.number,
 }
 
 export default HexGridDataEditCard
