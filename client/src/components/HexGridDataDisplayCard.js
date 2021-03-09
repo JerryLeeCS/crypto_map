@@ -7,6 +7,17 @@ function HexGridDataDisplayCard(props) {
     props.hexGridData.Color === "" &&
     props.hexGridData.Text === "" &&
     props.hexGridData.Emoji === ""
+
+  const twentyFourHoursInMs = 24 * 60 * 60 * 1000
+
+  const editableDate =
+    props.hexGridData &&
+    new Date(
+      parseInt(props.hexGridData.CreatedDate) * 1000 + twentyFourHoursInMs
+    )
+  const nowDate = new Date()
+  const isHexGridEditable = editableDate ? nowDate > editableDate : false
+
   return (
     <div className="card" hidden={props.hidden}>
       <div
@@ -37,15 +48,22 @@ function HexGridDataDisplayCard(props) {
             {props.hexGridData && props.hexGridData.Text}
           </p>
         )}
+        {!isHexGridEditable && editableDate && (
+          <small className="text-muted fw-light">
+            This post will be editable after {editableDate.toLocaleString()}
+          </small>
+        )}
         <div className="card_action-container text-end">
-          <button
-            type="button"
-            className="btn btn-light me-2"
-            onClick={props.onEdit}
-            disabled={props.isEditDisabled}
-          >
-            {hexGridDataIsEmpty ? "Create" : "Edit"}
-          </button>
+          {isHexGridEditable && (
+            <button
+              type="button"
+              className="btn btn-light me-2"
+              onClick={props.onEdit}
+              disabled={!isHexGridEditable}
+            >
+              {hexGridDataIsEmpty ? "Create" : "Edit"}
+            </button>
+          )}
           <button
             type="button"
             className="btn btn-light"
@@ -60,14 +78,12 @@ function HexGridDataDisplayCard(props) {
 }
 
 HexGridDataDisplayCard.defaultProps = {
-  isEditDisabled: false,
   onEdit: () => {},
   onClose: () => {},
 }
 
 HexGridDataDisplayCard.propTypes = {
   hexGridData: PropTypes.object,
-  isEditDisabled: PropTypes.bool,
   onEdit: PropTypes.func,
   onClose: PropTypes.func,
   hidden: PropTypes.bool,
