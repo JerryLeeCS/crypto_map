@@ -452,7 +452,7 @@ function App(props) {
   useEffect(() => {
     if (!drizzleIsLoading && selectedH3Id && drizzleState) {
       if (hexGridDataMap && hexGridDataMap[selectedH3Id]) {
-        setSelectedHexGridData(hexGridDataMap[selectedH3Id])
+        setSelectedHexGridData(Object.assign({}, hexGridDataMap[selectedH3Id]))
       } else {
         const contract = props.drizzle.contracts.HexGridStore
         const hexGridDataItems = contract.methods["hexGridDataItems"]
@@ -463,7 +463,7 @@ function App(props) {
           ]
 
         if (selectedHexGridData && selectedHexGridData.value) {
-          setSelectedHexGridData(selectedHexGridData.value)
+          setSelectedHexGridData(Object.assign({}, selectedHexGridData.value))
         }
       }
     }
@@ -587,7 +587,7 @@ function App(props) {
           }}
           onClose={() => {
             setSelectedH3Id(undefined)
-            setSelectedHexGridData(undefined)
+            setSelectedHexGridData({})
             setIsViewing(false)
           }}
           hidden={!(selectedHexGridData && isViewing)}
