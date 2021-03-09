@@ -18,8 +18,6 @@ const options = {
 
 const drizzle = new Drizzle(options)
 
-console.log("drizzle ", drizzle)
-
 ReactDOM.render(
   <React.StrictMode>
     <App drizzle={drizzle} />
