@@ -19,5 +19,15 @@ module.exports = {
       },
       network_id: "3",
     },
+    live: {
+      provider: function () {
+        return new HDWalletProvider(
+          mnemonic,
+          `https://mainnet.infura.io/v3/${infuraProjectID}`
+        )
+      },
+      network_id: 1,
+      gasPrice: 100000000000,
+    },
   },
 }
