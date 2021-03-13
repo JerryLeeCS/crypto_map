@@ -425,7 +425,7 @@ function App(props) {
         if (transactionStatus === "success") {
           setTextBannerInfo({
             className: "alert-success",
-            text: `Transaction Statue: ${transactionStatus}`,
+            text: `Transaction Status: ${transactionStatus}`,
           })
           setTransactionId(null)
         } else if (transactionStatus) {
