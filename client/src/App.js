@@ -347,7 +347,7 @@ function App(props) {
 
   useEffect(() => {
     if (!drizzleIsLoading) {
-      mapboxgl.accessToken = "YOUR_MAP_BOX_API_KEY"
+      mapboxgl.accessToken = "MAP_BOX_API_KEY"
       const map = new mapboxgl.Map({
         container: "mapbox",
         style: "mapbox://styles/jerrydeko/ckjxur72k0lu01cld8v81gibh",
